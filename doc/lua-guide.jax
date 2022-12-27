@@ -8,52 +8,43 @@
                                        Type |gO| to see the table of contents.
 
 ==============================================================================
-Introduction                                                         *lua-guide*
+イントロダクション                                                   *lua-guide*
 
-This guide will go through the basics of using Lua in Neovim. It is not meant
-to be a comprehensive encyclopedia of all available features, nor will it
-detail all intricacies. Think of it as a survival kit -- the bare minimum
-needed to know to comfortably get started on using Lua in Neovim.
+このガイドは Neovim で Lua を使用するための基本を説明します。辞書のように全ての
+機能を細かく載せるものではありません。NeovimでLua を快適に使い始めるための最低限
+の知識、サバイバルキットのような物だと思ってください。
 
-An important thing to note is that this isn't a guide to the Lua language
-itself. Rather, this is a guide on how to configure and modify Neovim through
-the Lua language and the functions we provide to help with this. Take a look
-at |luaref| and |lua-concepts| if you'd like to learn more about Lua itself.
-Similarly, this guide assumes some familiarity with the basics of Neovim
-(commands, options, mappings, autocommands), which are covered in the
-|user-manual|.
+このガイドは Lua 言語自体のガイドではないことに注意してください。 Neovim で使い
+やすいように提供されている機能についてのガイドです。Lua について更に学びたい場合
+は、|luaref| や、|lua-concepts| をご覧ください。同様に、|user-manual| に載ってい
+るNeovim の基本的な機能(コマンド、オプション、マッピング、自動コマンド)にある程
+度慣れていることを前提としています。
 
 ------------------------------------------------------------------------------
-Some words on the API                                            *lua-guide-api*
+APIについて                                                      *lua-guide-api*
 
-The purpose of this guide is to introduce the different ways of interacting
-with Neovim through Lua (the "API"). This API consists of three different
-layers:
+このガイドの目的は、Lua ("API") で Neovim を操作するいくつかの方法を紹介すること
+です。この API は3つの異るレイヤーから成っています:
 
-1. The "Vim API" inherited from Vim: |ex-commands| and |builtin-functions| as
-well as |user-function|s in Vimscript. These are accessed through |vim.cmd()|
-and |vim.fn| respectively, which are discussed under |lua-guide-vimscript|
-below.
+1. Vim から継承された "Vim API": Vim script の |ex-commands| 、
+|builtin-functions|、|uset-function|。これらの3つはそれぞれ、 |vim.cmd()|、
+|vim.fn| でアクセスできます。下記の |lua-guide-vimscript| で紹介します。
 
-2. The "Neovim API" written in C for use in remote plugins and GUIs; see |api|.
-These functions are accessed through |vim.api|.
+2. リモートプラグインと GUI で使われる C で書かれた "Neovim API"。|api| を参照し
+てください。これらの関数は |vim.api| でアクセスできます。
 
-3. The "Lua API" written in and specifically for Lua. These are any other
-functions accessible through `vim.*` not mentioned already; see |lua-stdlib|.
+3. Lua 専用に書かれた "Lua API"。これらは `vim.*` でアクセスできます。
+|lua-stdlib| を参照してください。
 
-This distinction is important, as API functions inherit behavior from their
-original layer: For example, Neovim API functions always need all arguments to
-be specified even if Lua itself allows omitting arguments (which are then
-passed as `nil`); and Vim API functions can use 0-based indexing even if Lua
-arrays are 1-indexed by default.
+ここで重要な違いは、API 関数は元のレイヤーから動作を継承することです。例えば、
+Neovim API 関数は Lua で引数を省略(`nil` として渡される)できたとしても全てを指定
+する必要があります。加えて、Vim API 関数はインデックスが0始まりなのに対して、
+Lua では1始まりです。
 
-Through this, any possible interaction can be done through Lua without writing
-a complete new API from scratch. For this reason, functions are usually not
-duplicated between layers unless there is a significant benefit in
-functionality or performance (e.g., you can map Lua functions directly through
-|nvim_create_autocmd()| but not through |:autocmd|). In case there are multiple
-ways of achieving the same thing, this guide will only cover what is most
-convenient to use from Lua.
+これによって、新しい API を作ることなく Lua に対応することができました。そのため、
+機能やパフォーマンスに大きな利点がない限り関数はレイヤー間で重複しません。(例え
+ば、|:autocmd| を使用せず、Lua 関数で |nvim_create_autocmd()| を使用できます。)
+同じ方法が複数ある場合、このガイドでは Lua から最も使いやすい方法を紹介します。
 
 ==============================================================================
 Using Lua                                                  *lua-guide-using-Lua*
