@@ -47,31 +47,32 @@ Lua では1始まりです。
 同じ方法が複数ある場合、このガイドでは Lua から最も使いやすい方法を紹介します。
 
 ==============================================================================
-Using Lua                                                  *lua-guide-using-Lua*
+Luaを使う                                                  *lua-guide-using-Lua*
 
-To run Lua code from the Neovim command line, use the |:lua| command:
+コマンドラインから Lua コードを実行するには、|:lua| コマンドを使用します。:
 >vim
     :lua print("Hello!")
 <
-Note: each |:lua| command has its own scope and variables declared with the
-local keyword are not accessible outside of the command. This won't work:
+Note: 各 |:lua|
+コマンドはそれぞれスコープを持っており、ローカル宣言された変数はその他のコマンド
+からアクセスできません。次の例は動作しません。:
 >vim
     :lua local foo = 1
     :lua print(foo)
     " prints "nil" instead of "1"
 <
-You can also use `:lua=`, which is the same as `:lua vim.pretty_print(...)`,
-to conveniently check the value of a variable or a table:
+また、|:lua| を使用することができ、`:lua vim.pretty_print(...)` と同じ動作をします。
+これによって、変数やテーブルの値を楽に確認できます。:
 >lua
     :lua=package
 <
-To run a Lua script in an external file, you can use the |:source| command
-exactly like for a Vimscript file:
+外部の Lua ファイルを実行したい場合、|:source| コマンドを使用します。
+これは、Vim script ファイルと同じ様に動作します。:
 >vim
     :source ~/programs/baz/myluafile.lua
 <
-Finally, you can include Lua code in a Vimscript file by putting it inside a
-|lua-heredoc| block:
+最後に、ヒアドキュメント構文を使用すると、Vim script ファイルに Lua コードを含め
+ることができます。:
 >vim
     lua << EOF
       local tbl = {1, 2, 3}
