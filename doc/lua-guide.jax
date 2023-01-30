@@ -82,25 +82,25 @@ Note: 各 |:lua|
     EOF
 <
 ------------------------------------------------------------------------------
-Using Lua files on startup                                    *lua-guide-config*
+起動時に Lua ファイルを使用する                               *lua-guide-config*
 
-Neovim supports using `init.vim` or `init.lua` as the configuration file, but
-not both at the same time. This should be placed in your |config| directory,
-which is typically `~/.config/nvim` for Linux, BSD, or macOS, and
-`~/AppData/Local/nvim/` for Windows. Note that you can use Lua in `init.vim`
-and Vimscript in `init.lua`, which will be covered below.
+Neovim は、`init.vim` か `init.lua` を設定ファイルとして使用することができます。
+ただし、同時に使用することはできません。これらは、|config| ディレクトリへ配置す
+る必要があり一般的に Linux, BSD, macOS では `~/.config/nvim` で Windows では
+`~/AppData/Local/nvim/` です。Note `init.vim` 内で Lua を、`init.vim` 内でVim
+sript を使うこともできます。以下で説明します。
 
-If you'd like to run any other Lua script on |startup| automatically, then you
-can simply put it in `plugin/` in your |'runtimepath'|.
+その他の Lua スクリプトを |startup| 時に自動で実行させたい場合、`runtimepath` 内
+にある `plugin/` ディレクトリに配置してください。
 
 ------------------------------------------------------------------------------
 Lua modules                                                  *lua-guide-modules*
 
-If you want to load Lua files on demand, you can place them in the `lua/`
-directory in your |'runtimepath'| and load them with `require`. (This is the
-Lua equivalent of Vimscript's |autoload| mechanism.)
+任意のタイミングで Lua ファイルを読み込みたい場合、|'runtimepath'| 内にある
+`lua` ディレクトリに配置して `require` でロードします。(これは、Vim script にお
+ける |autoload| と同じ役割です。)
 
-Let's assume you have the following directory structure:
+このようなディレクトリ構造があるとします。:
 >
     ~/.config/nvim
     |-- after/
@@ -115,31 +115,30 @@ Let's assume you have the following directory structure:
     |-- init.vim
 <
 
-Then the following Lua code will load `myluamodule.lua`:
+次の Lua コードで `myluamodule.lua` をロードします。:
 >lua
     require("myluamodule")
 <
-Note the absence of a `.lua` extension.
+Note: `.lua` 拡張子がつかないことに注意してください。
 
-Similarly, loading `other_modules/anothermodule.lua` is done via
+同様に、`other_modules/anothermodule.lua` をロードするには次のようにします。
 >lua
     require('other_modules/anothermodule')
     -- or
     require('other_modules.anothermodule')
 <
 
-Note how "submodules" are just subdirectories; the `.` is equivalent to the
-path separator `/` (even on Windows).
+Note: サブモジュールは単なるサブディレクトリであることに注意してください。`.` は
+パスの区切り文字 `/` と同じです。(Windows でも同様)
 
-A folder containing an |init.lua| file can be required directly, without
-having to specify the name of the file:
+フォルダ内にある |init.lua| ファイルはファイル名を指定しなくてもロードできます。:
 >lua
     require('other_modules') -- loads other_modules/init.lua
 <
-Requiring a nonexistent module or a module which contains syntax errors aborts
-the currently executing script. `pcall()` may be used to catch such errors. The
-following example tries to load the `module_with_error` and only calls one of
-its functions if this succeeds and prints an error message otherwise:
+読み込もうとしたモジュールが存在しない場合と構文エラーを含んでいる場合、実行中の
+スクリプトは停止します。このようなエラーをキャッチするには `pcall()` を使用しま
+す。次の例では、`module_with_error` のロードを試みてから関数を呼びます。失敗した
+場合、エラーメッセージを表示します。:
 >lua
     local ok, mymod = pcall(require, 'module_with_error')
     if not ok then
@@ -148,24 +147,23 @@ its functions if this succeeds and prints an error message otherwise:
       mymod.function()
     end
 <
-In contrast to |:source|, |require()| not only searches through all `lua/` directories
-under |'runtimepath'|, it also cache the module on first use. Calling
-`require()` a second time will therefore _not_ execute the script again and
-instead return the cached file. To rerun the file, you need to remove it from
-the cache manually first:
+|:source| とは対照的に、|require()| は |runtimepath| 内の `lua/` ディレクトリを
+検索するだけでなく、初回使用時にモジュールをキャッシュします。再度 `require()`
+を呼び出す場合、スクリプトは実行されずキャッシュされたファイルを返します。もう一
+度実行したい場合、手動でキャッシュを削除します。:
 >lua
     package.loaded['myluamodule'] = nil
     require('myluamodule')    -- read and execute the module again from disk
 <
 ------------------------------------------------------------------------------
-See also:
+参照:
 • |lua-require|
 • |luaref-pcall()|
 
 ==============================================================================
-Using Vim commands and functions from Lua                  *lua-guide-vimscript*
+Vim のコマンドと関数を Lua から使う                        *lua-guide-vimscript*
 
-All Vim commands and functions are accessible from Lua.
+全ての Vim のコマンドと関数は Lua から使用することができます。
 
 ------------------------------------------------------------------------------
 Vim commands                                            *lua-guide-vim-commands*
