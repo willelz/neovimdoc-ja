@@ -61,7 +61,8 @@ Note: 各 |:lua|
     :lua print(foo)
     " prints "nil" instead of "1"
 <
-また、|:lua| を使用することができ、`:lua vim.pretty_print(...)` と同じ動作をします。
+また、|:lua| を使用することができ、`:lua vim.pretty_print(...)` と同じ動作をしま
+す。
 これによって、変数やテーブルの値を楽に確認できます。:
 >lua
     :lua=package
@@ -166,44 +167,43 @@ Vim のコマンドと関数を Lua から使う                        *lua-gui
 全ての Vim のコマンドと関数は Lua から使用することができます。
 
 ------------------------------------------------------------------------------
-Vim commands                                            *lua-guide-vim-commands*
+Vim コマンド                                            *lua-guide-vim-commands*
 
-To run an arbitrary Vim command from Lua, pass it as a string to |vim.cmd()|:
+Vim コマンドを Lua から実行するには、文字列を |vim.cmd()| に渡します。:
 >lua
     vim.cmd("colorscheme habamax")
 <
-Note that special characters will need to be escaped with backslashes:
+Note 特殊な文字はバックシュラッシュでエスケープが必要です:
 >lua
     vim.cmd("%s/\\Vfoo/bar/g")
 <
-An alternative is to use a literal string (see |luaref-literal|) delimited by
-double brackets `[[ ]]` as in
+別の方法として角カッコを使った文字列リテラル(|luaref-literal| を参照)があります。
 >lua
     vim.cmd([[%s/\Vfoo/bar/g]])
 <
-Another benefit of using literal strings is that they can be multiple lines;
-this allows you to pass multiple commands to a single call of |vim.cmd()|:
+加えて、文字列リテラルは複数行の文字列を扱える利点があります。
+1回の |vim.cmd()| の呼び出しで複数のコマンドを渡すこともできます。:
 >lua
     vim.cmd([[
       highlight Error guibg=red
       highlight link Warning Error
     ]])
 <
-This is the converse of |lua-heredoc| and allows you to include Lua code in
-your `init.vim`.
+これと逆の機能として |lua-heredoc| があり、 `init.vim` に Lua コードを含めること
+ができます。
 
-If you want to build your Vim command programmatically, the following form can
-be useful (all these are equivalent to the corresponding line above):
+プログラム的に Vim コマンドを呼び出したい場合、次のような方法があります(上記の例
+と等価です):
 >lua
     vim.cmd.colorscheme("habamax")
     vim.cmd.highlight({ "Error", "guibg=red" })
     vim.cmd.highlight({ "link", "Warning", "Error" })
 <
 ------------------------------------------------------------------------------
-Vimscript functions                                    *lua-guide-vim-functions*
+Vim script 関数                                        *lua-guide-vim-functions*
 
-Use |vim.fn| to call Vimscript functions from Lua. Data types between Lua and
-Vimscript are automatically converted:
+|vim.fn| を使用して Vim script の関数を Lua から呼び出します。データの型は Lua
+と Vim script の間で自動的に変換されます。:
 >lua
     print(vim.fn.printf('Hello from %s', 'Lua'))
 
@@ -217,34 +217,36 @@ Vimscript are automatically converted:
     vim.fn.jobstart('ls', { on_stdout = print_stdout })
     print(vim.fn.printf('Hello from %s', 'Lua'))
 <
-This works for both |builtin-functions| and |user-function|s.
+これは |builtin-function| と |user-function| の両方で動作します。
 
-Note that hashes (`#`) are not valid characters for identifiers in Lua, so,
-e.g., |autoload| functions have to be called with this syntax:
+Note ハッシュ(`#`)は Lua で有効な識別子ではないため、 |autoload| 関数などを呼び
+出すには次の構文を使用します。:
 >lua
     vim.fn['my#autoload#function']()
 <
 ------------------------------------------------------------------------------
-See also:
-• |builtin-functions|: alphabetic list of all Vimscript functions
-• |function-list|:     list of all Vimscript functions grouped by topic
+参照:
+• |builtin-functions|: Vim script 関数のアルファベット順のリスト
+• |function-list|:     トピックごとにグループ化された Vim script 関数のリスト
 • |:runtime|:          run all Lua scripts matching a pattern in |'runtimepath'|
-• |package.path|:      list of all paths searched by `require()`
+• |:runtime|:          |'runtimepath'| 内のパターンに一致する全ての Lua スクリ
+                      プト が実行されます
+• |package.path|:      `require()` で検索される全てのパスのリスト
 
 ==============================================================================
-Variables                                                  *lua-guide-variables*
+変数                                                       *lua-guide-variables*
 
-Variables can be set and read using the following wrappers, which directly
-correspond to their |variable-scope|:
+|variable-scope| に準じて変数を読み書きできるラッパーがあります。:
 
-• |vim.g|:   global variables (|g:|)
-• |vim.b|:   variables for the current buffer (|b:|)
-• |vim.w|:   variables for the current window (|w:|)
+• |vim.g|:   グローバル変数(|g:|)
+• |vim.b|:   バッファローカルな変数 (|b:|)
+• |vim.w|:   ウィンドウローカルな変数 (|w:|)
 • |vim.t|:   variables for the current tabpage (|t:|)
-• |vim.v|:   predefined Vim variables (|v:|)
-• |vim.env|: environment variables defined in the editor session
+• |vim.t|:   タブページにローカルな変数 (|t:|)
+• |vim.v|:   Vim が定義している変数 (|v:|)
+• |vim.env|: エディタのセッションで定義されている環境変数
 
-Data types are converted automatically. For example:
+データの型は次の例のように自動的に変換されます。:
 >lua
     vim.g.some_global_variable = {
       key1 = "value",
@@ -254,25 +256,23 @@ Data types are converted automatically. For example:
     print(vim.inspect(vim.g.some_global_variable))
     --> { key1 = "value", key2 = 300 }
 <
-You can target specific buffers (via number), windows (via |window-ID|), or
-tabpages by indexing the wrappers:
+バッファ(番号)やウィンドウ(|window_ID|)やタブページを指定したい場合、次のように
+ラッパーのインデックスを指定します。:
 >lua
     vim.b[2].myvar = 1               -- set myvar for buffer number 2
     vim.w[1005].myothervar = true    -- set myothervar for window ID 1005
 <
-Some variable names may contain characters that cannot be used for identifiers
-in Lua. You can still manipulate these variables by using the syntax
+変数名に Lua で有効ではない文字が含まれている場合、次の構文を使用します。：
 >lua
     vim.g['my#variable'] = 1
 <
-Note that you cannot directly change fields of array variables. This won't
-work:
+Note 配列のフィールドを直接変更することはできません。次の例は動作しません。:
 >lua
     vim.g.some_global_variable.key2 = 400
     vim.pretty_print(vim.g.some_global_variable)
     --> { key1 = "value", key2 = 300 }
 <
-Instead, you need to create an intermediate Lua table and change this:
+代わりに、Lua の中間テーブルを作成してから上書きします。:
 >lua
     local temp_table = vim.g.some_global_variable
     temp_table = keys = 400
@@ -280,61 +280,60 @@ Instead, you need to create an intermediate Lua table and change this:
     vim.pretty_print(vim.g.some_global_variable)
     --> { key1 = "value", key2 = 400 }
 <
-To delete a variable, simply set it to `nil`:
+変数を削除するには、単に `nil` を代入します。:
 >lua
     vim.g.myvar = nil
 <
 ------------------------------------------------------------------------------
-See also:
+参考:
 • |lua-vim-variables|
 
 ==============================================================================
-Options                                                      *lua-guide-options*
+オプション                                                   *lua-guide-options*
 
-There are two complementary ways of setting |options| via Lua.
+Lua で オプション(|options|)を設定する方法は2種類あります。
 
 ------------------------------------------------------------------------------
 vim.opt
 
-The most convenient way for setting global and local options, e.g., in `init.lua`,
-is through `vim.opt` and friends:
+`init.lua` で グローバルオプションとローカルオプションを設定する最も便利な方法と
+して `vim.opt` とその仲間達があります。
 
-• |vim.opt|:        behaves like |:set|
-• |vim.opt_global|: behaves like |:setglobal|
-• |vim.opt_local|:  behaves like |:setlocal|
+• |vim.opt|:        |:set| のように動作します。
+• |vim.opt_global|: |:setglobal| のように動作します。
+• |vim.opt_local|:  |:setlocal| のように動作します。
 
-For example, the Vimscript commands
+例えば、次の Vim script コマンドは
 >vim
     set smarttab
     set nosmarttab
 <
-are equivalent to
+下記と等価です。
 >lua
     vim.opt.smarttab = true
     vim.opt.smarttab = false
 <
-In particular, they allow an easy way to working with list-like, map-like, and
-set-like options through Lua tables: Instead of
+list/map/set のようなオプションは
 >vim
     set wildignore=*.o,*.a,__pycache__
     set listchars=space:_,tab:>~
     set formatoptions=njt
 <
-you can use
+次のように Lua のテーブルで楽に設定できます。
 >lua
     vim.opt.wildignore = { '*.o', '*.a', '__pycache__' }
     vim.opt.listchars = { space = '_', tab = '>~' }
     vim.opt.formatoptions = { n = true, j = true, t = true }
 <
-These wrappers also come with methods that work similarly to their |:set+=|,
-|:set^=| and |:set-=| counterparts in Vimscript:
+これらのラッパーには Vim script における |:set+=|, |:set^=|, |:set-=| と同じ動作
+をするメソッドがあります。:
 >lua
     vim.opt.shortmess:append({ I = true })
     vim.opt.wildignore:prepend('*.o')
     vim.opt.whichwrap:remove({ 'b', 's' })
 <
-The price to pay is that you cannot access the option values directly but must
-use |vim.opt:get()|:
+オプションの値に直接アクセスすることができず、|vim.opt:get()| を経由してアクセス
+します。
 >lua
     print(vim.opt.smarttab)
     --> {...} (big table)
