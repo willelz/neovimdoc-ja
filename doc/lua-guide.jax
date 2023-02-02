@@ -332,8 +332,8 @@ list/map/set のようなオプションは
     vim.opt.wildignore:prepend('*.o')
     vim.opt.whichwrap:remove({ 'b', 's' })
 <
-オプションの値に直接アクセスすることができず、|vim.opt:get()| を経由してアクセス
-します。
+ただし、オプションの値に直接アクセスすることができず、|vim.opt:get()| を経由して
+アクセスします。
 >lua
     print(vim.opt.smarttab)
     --> {...} (big table)
@@ -345,16 +345,16 @@ list/map/set のようなオプションは
 ------------------------------------------------------------------------------
 vim.o
 
-For this reason, there exists a more direct variable-like access using `vim.o`
-and friends, similarly to how you can get and set options via `:echo &number`
-and `:let &listchars='space:_,tab:>~'`:
+上記に対して、変数のように直接扱うことのできる `vim.o` とその仲間達があります。
+`:echo &number` や `:let &listchars='space:_,tab:>~'` のようにオプションを取得、
+設定できます。
 
-• |vim.o|:  behaves like |:set|
-• |vim.go|: behaves like |:setglobal|
-• |vim.bo|: for buffer-scoped options
-• |vim.wo|: for window-scoped options
+• |vim.o|:  |:set| のように動作します。
+• |vim.go|: |:setglobal| のように動作します。
+• |vim.bo|: バッファローカルなオプション
+• |vim.wo|: ウィンドウローカルなオプション
 
-For example:
+例:
 >lua
     vim.o.smarttab = false -- :set nosmarttab
     print(vim.o.smarttab)
@@ -369,37 +369,36 @@ For example:
     print(vim.bo.shiftwidth)
     --> 4
 <
-Just like variables, you can specify a buffer number or |window-ID| for buffer
-and window options, respectively. If no number is given, the current buffer or
-window is used:
+変数と同じようにバッファ番号や |window_ID| を指定することができます。何も指定し
+ない場合、カレントバッファ/カレントウィンドウが対象になります。:
 >lua
     vim.bo[4].expandtab = true -- sets expandtab to true in buffer 4
     vim.wo.number = true       -- sets number to true in current window
     print(vim.wo[0].number)    --> true
 <
 ------------------------------------------------------------------------------
-See also:
+参照:
 • |lua-options|
 
 ==============================================================================
-Mappings                                                    *lua-guide-mappings*
+マッピング                                                  *lua-guide-mappings*
 
-You can map either Vim commands or Lua functions to key sequences.
+Vim コマンドや Lua 関数をキー入力にマッピングすることができます。
 
 ------------------------------------------------------------------------------
-Creating mappings                                       *lua-guide-mappings-set*
+マッピングを作成する                                    *lua-guide-mappings-set*
 
-Mappings can be created using |vim.keymap.set()|. This function takes three
-mandatory arguments:
-• {mode} is a string or a table of strings containing the mode
-  prefix for which the mapping will take effect. The prefixes are the ones
-  listed in |:map-modes|, or "!" for |:map!|, or empty string for |:map|.
-• {lhs} is a string with the key sequences that should trigger the mapping.
-  An empty string is equivalent to |<Nop>|, which disables a key.
-• {rhs} is either a string with a Vim command or a Lua function that should
-  be execucted when the {lhs} is entered.
+マッピングを作成するには |vim.keymap.set()| を使用します。この関数は3つの引数を
+必要とします。:
+• {mode} はマッピングを適用するモードのプレフィックスの文字列または、テーブルで
+   す。プレフィックスのリストは |:map-modes| にあります。"!"を指定すると |:map!| 
+   となり、何も指定しない場合は |:map| です。
+• {lhs} はトリガーとなるキーの文字列です。空の文字列は |<Nop>| と解釈され、 キ
+   ーを無効にします。
+• {rhs} は Vim コマンドの文字列か、Lua の関数です。{lhs} を入力すると実行されま
+   す。
 
-Examples:
+例:
 >lua
     -- Normal mode mapping for Vim command
     vim.keymap.set('n', '<Leader>ex1', '<cmd>echo "Example 1"<cr>')
@@ -410,52 +409,51 @@ Examples:
     -- Normal mode mapping for Lua function with arguments
     vim.keymap.set('n', '<Leader>ex4', function() print('Example 4') end)
 <
-You can map functions from Lua modules via
+Lua のモジュールから関数をマッピングすることもできます。
 >lua
     vim.keymap.set('n', '<Leader>pl1', require('plugin').action)
 <
-Note that this loads the plugin at the time the mapping is defined. If you
-want to defer the loading to the time when the mapping is executed (as for
-|autoload| functions), wrap it in `function() end`:
+Note この場合、マッピングが定義された時にプラグインが読み込まれます。マッピング
+が実行された時に読み込んで欲しい場合(|autoload| 関数のように)、`function() end`
+でラップします。:
 >lua
     vim.keymap.set('n', '<Leader>pl2', function() require('plugin').action() end)
 <
-The fourth, optional, argument is a table with keys that modify the behavior
-of the mapping such as those from |:map-arguments|. The following are the most
-useful options:
-• `buffer`: If given, only set the mapping for the buffer with the specified
-  number; `0` or `true` means the current buffer. >lua
+4つめの引数はオプションでテーブルを渡します。|:map-arguments| にあるマッピングの
+振舞いを指定します。下記のオプションはとても役に立ちます。:
+• `buffer`: バッファ番号を指定するとそのバッファだけにマッピングを適用できます。
+   `0` か `true` を指定するとカレントバッファになります。 >lua
     -- set mapping for the current buffer
     vim.keymap.set('n', '<Leader>pl1', require('plugin').action, { buffer = true })
     -- set mapping for the buffer number 4
     vim.keymap.set('n', '<Leader>pl1', require('plugin').action, { buffer = 4 })
 <
-• `silent`: If set to `true`, suppress output such as error messages. >lua
+• `silent`: `true` を指定するとエラーメッセージを抑制できます。 >lua
     vim.keymap.set('n', '<Leader>pl1', require('plugin').action, { silent = true })
 <
-• `expr`: If set to `true`, do not execute the {rhs} but use the return value
-  as input. Special |keycodes| are converted automatically. For example, the following
-  mapping replaces <down> with <c-n> in the popupmenu only: >lua
+• `expr`: `true` を指定すると {rhs} は実行されず返り値を入力として扱います。特
+   殊な |keycodes| は自動的に変換されます。例えば、次の例は popupmenu の中だけ
+   <down> を <c-n> に置き換えます。: >lua
     vim.keymap.set('c', '<down>', function()
       if vim.fn.pumvisible() == 1 then return '<c-n>' end
       return '<down>'
     end, { expr = true })
 <
-• `desc`: A string that is shown when listing mappings with, e.g., |:map|.
-  This is useful since Lua functions as {rhs} are otherwise only listed as
-  `Lua: <number> <source file>:<line>`. Plugins should therefore always use this
-  for mappings they create. >lua
-    vim.keymap.set('n', '<Leader>pl1', require('plugin').action,
-      { desc = 'Execute action from plugin' })
+• `desc`: |:map| などでマッピングを表示したときに一緒に表示される文字列です。
+   Lua 関数を {rhs} にした場合、`Lua: <number> <source file>:<line>` としか表示
+   されないため、指定すると役立ちます。そのため、プラグインでマッピングを作成す
+   る場合常に指定する必要があります。 >lua
+    vim.keymap.set('n', '<Leader>pl1', require('plugin').action, { desc = 'Execute action from plugin' })
 <
-• `remap`: By default, all mappings are nonrecursive by default (i.e.,
-  |vim.keymap.set()| behaves like |:noremap|). If the {rhs} is itself a mapping
-  that should be executed, set `remap = true`: >lua
+• `remap`: デフォルトでは全てのマッピングは再帰的に実行されません(すなわち、
+   |vim.keymap.set()|は |:noremap| と同じ動作です)。{rhs} 自体にマッピングを適用
+   したい場合、`remap = true` を指定します。: >lua
     vim.keymap.set('n', '<Leader>ex1', '<cmd>echo "Example 1"<cr>')
     -- add a shorter mapping
     vim.keymap.set('n', 'e', '<Leader>ex1', { remap = true })
 <
-  Note: |<Plug>| mappings are always expanded even with the default `remap = false`: >lua
+  Note: |<Plug>| マッピングはデフォルトである `remap = false` でも常に展開されま
+  す。: >lua
     vim.keymap.set('n', '[%', '<Plug>(MatchitNormalMultiBackward)')
 <
 ------------------------------------------------------------------------------
