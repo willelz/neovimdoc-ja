@@ -457,17 +457,17 @@ Note この場合、マッピングが定義された時にプラグインが読
     vim.keymap.set('n', '[%', '<Plug>(MatchitNormalMultiBackward)')
 <
 ------------------------------------------------------------------------------
-Removing mappings                                       *lua-guide-mappings-del*
+マッピングを削除する                                    *lua-guide-mappings-del*
 
-A specific mapping can be removed with |vim.keymap.del()|:
+特定のマッピングを削除するには |vim.keymap.del()| を使用します。:
 >lua
     vim.keymap.del('n', '<Leader>ex1')
     vim.keymap.del({'n', 'c'}, '<Leader>ex2', {buffer = true})
 <
 ------------------------------------------------------------------------------
-See also:
-• `vim.api.`|nvim_get_keymap()|:     return all global mapping
-• `vim.api.`|nvim_buf_get_keymap()|: return all mappings for buffer
+参照:
+• `vim.api.`|nvim_get_keymap()|:     全てのグローバルマッピングを返します
+• `vim.api.`|nvim_buf_get_keymap()|: バッファローカルなマッピングを全て返します
 
 ==============================================================================
 Autocommands                                            *lua-guide-autocommands*
