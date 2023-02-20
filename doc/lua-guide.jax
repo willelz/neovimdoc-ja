@@ -470,12 +470,14 @@ Note この場合、マッピングが定義された時にプラグインが読
 • `vim.api.`|nvim_buf_get_keymap()|: バッファローカルなマッピングを全て返します
 
 ==============================================================================
-Autocommands                                            *lua-guide-autocommands*
+自動コマンド                                            *lua-guide-autocommands*
 
 An |autocommand| is a Vim command or a Lua function that is automatically
 executed whenever one or more |events| are triggered, e.g., when a file is
 read or written, or when a window is created. These are accessible from Lua
 through the Neovim API.
+|autocommand| は|events| をトリガーにして Vim コマンドや Lua 関数を自動的に実行
+します。
 
 ------------------------------------------------------------------------------
 Creating autocommands                             *lua-guide-autocommand-create*
