@@ -472,34 +472,29 @@ Note この場合、マッピングが定義された時にプラグインが読
 ==============================================================================
 自動コマンド                                            *lua-guide-autocommands*
 
-An |autocommand| is a Vim command or a Lua function that is automatically
-executed whenever one or more |events| are triggered, e.g., when a file is
-read or written, or when a window is created. These are accessible from Lua
-through the Neovim API.
 |autocommand| は|events| をトリガーにして Vim コマンドや Lua 関数を自動的に実行
-します。
+します。例えば、ファイルを読み込んだり書き込んだ時、ウィンドウを作成した時などで
+す。これらは Neovim API を介して Lua から使用することができます。
 
 ------------------------------------------------------------------------------
-Creating autocommands                             *lua-guide-autocommand-create*
+自動コマンドを作成する                            *lua-guide-autocommand-create*
 
-Autocommands are created using `vim.api.`|nvim_create_autocmd()|, which takes
-two mandatory arguments:
-• {event}: a string or table of strings containing the event(s) which should
-           trigger the command or function.
-• {opts}:  a table with keys that control what should happen when the event(s)
-           are triggered.
+自動コマンドは `vim.api.`|nvim_create_autocmd()| を使って作成します。必須の引数
+が2つあります。
+• {event}: コマンドや関数のトリガーになるイベント名の文字列又は、そのテーブル。
+• {opts}:  イベントがトリガーされた時の動作を制御するキーを持ったテーブル。
 
-The most important options are:
+最も重要なオプション:
 
-• `pattern`:  A string or table of strings containing the |autocmd-pattern|.
-            Note: Environment variable like `$HOME` and `~` are not automatically
-            expanded; you need to explicitly use `vim.fn.`|expand()| for this.
-• `command`:  A string containing a Vim command.
-• `callback`: A Lua function.
+• `pattern` : |autocmd-pattern| を含む文字列又は、そのテーブル。Note: `$HOME`の
+             様な環境変数や `~` は自動的に展開されません。`vim.fn.`|expand()| を
+             使用する必要があります。
+• `command`:  Vim コマンドを含んだ文字列。
+• `callback`: Lua 関数。
 
-You must specify one and only one of `command` and `callback`. If `pattern` is
-omitted, it defaults to `pattern = '*'`.
-Examples:
+`command` か `callback` のどちらかは必ず渡す必要があります。`pattern` を省略した
+場合、`pattern = '*'` になります。
+例:
 >lua
     vim.api.nvim_create_autocmd({"BufEnter", "BufWinEnter"}, {
       pattern = {"*.c", "*.h"},
