@@ -10,34 +10,34 @@
 ==============================================================================
 イントロダクション                                                   *lua-guide*
 
-このガイドは Neovim で Lua を使用するための基本を説明します。辞書のように全ての
-機能を細かく載せるものではありません。NeovimでLua を快適に使い始めるための最低限
+このガイドは Nvim でLua を使用するための基本を説明します。辞書のように全ての
+機能を細かく載せるものではありません。NvimでLua を快適に使い始めるための最低限
 の知識、サバイバルキットのような物だと思ってください。
 
-このガイドは Lua 言語自体のガイドではないことに注意してください。 Neovim で使い
+このガイドは Lua 言語自体のガイドではないことに注意してください。 Nvim で使い
 やすいように提供されている機能についてのガイドです。Lua について更に学びたい場合
-は、|luaref| や、|lua-concepts| をご覧ください。同様に、|user-manual| に載ってい
-るNeovim の基本的な機能(コマンド、オプション、マッピング、自動コマンド)にある程
+は、 |luaref| や、 |lua-concepts| をご覧ください。同様に、 |user-manual| に載ってい
+るNvim の基本的な機能(コマンド、オプション、マッピング、自動コマンド)にある程
 度慣れていることを前提としています。
 
 ------------------------------------------------------------------------------
 APIについて                                                      *lua-guide-api*
 
-このガイドの目的は、Lua ("API") で Neovim を操作するいくつかの方法を紹介すること
+このガイドの目的は、Lua ("API") で Nvim を操作するいくつかの方法を紹介すること
 です。この API は3つの異るレイヤーから成っています:
 
 1. Vim から継承された "Vim API": Vim script の |ex-commands| 、
-|builtin-functions|、|uset-function|。これらの3つはそれぞれ、 |vim.cmd()|、
+|builtin-functions|、 |uset-function|。これらの3つはそれぞれ、 |vim.cmd()|、
 |vim.fn| でアクセスできます。下記の |lua-guide-vimscript| で紹介します。
 
-2. リモートプラグインと GUI で使われる C で書かれた "Neovim API"。|api| を参照し
+2. リモートプラグインと GUI で使われる C で書かれた "Nvim API"。 |api| を参照し
 てください。これらの関数は |vim.api| でアクセスできます。
 
 3. Lua 専用に書かれた "Lua API"。これらは `vim.*` でアクセスできます。
 |lua-stdlib| を参照してください。
 
 ここで重要な違いは、API 関数は元のレイヤーから動作を継承することです。例えば、
-Neovim API 関数は Lua で引数を省略(`nil` として渡される)できたとしても全てを指定
+Nvim API 関数は Lua で引数を省略(`nil` として渡される)できたとしても全てを指定
 する必要があります。加えて、Vim API 関数はインデックスが0始まりなのに対して、
 Lua では1始まりです。
 
@@ -53,16 +53,14 @@ Luaを使う                                                  *lua-guide-using-L
 >vim
     :lua print("Hello!")
 <
-Note: 各 |:lua|
-コマンドはそれぞれスコープを持っており、ローカル宣言された変数はその他のコマンド
-からアクセスできません。次の例は動作しません。:
+Note: 各 |:lua| コマンドはそれぞれスコープを持っており、ローカル宣言された変数はそ
+の他のコマンドからアクセスできません。次の例は動作しません。:
 >vim
     :lua local foo = 1
     :lua print(foo)
     " prints "nil" instead of "1"
 <
-また、|:lua| を使用することができ、`:lua vim.pretty_print(...)` と同じ動作をしま
-す。
+また、 |:lua| を使用することができ、 `:lua vim.print(...)` と同じ動作をします。
 これによって、変数やテーブルの値を楽に確認できます。:
 >lua
     :lua=package
@@ -72,8 +70,8 @@ Note: 各 |:lua|
 >vim
     :source ~/programs/baz/myluafile.lua
 <
-最後に、ヒアドキュメント構文を使用すると、Vim script ファイルに Lua コードを含め
-ることができます。:
+最後に、ヒアドキュメント構文(|:lua-heredoc|)を使用すると、Vim script ファイルに
+Lua コードを含めることができます。:
 >vim
     lua << EOF
       local tbl = {1, 2, 3}
@@ -85,7 +83,7 @@ Note: 各 |:lua|
 ------------------------------------------------------------------------------
 起動時に Lua ファイルを使用する                               *lua-guide-config*
 
-Neovim は、`init.vim` か `init.lua` を設定ファイルとして使用することができます。
+Nvim は、`init.vim` か `init.lua` を設定ファイルとして使用することができます。
 ただし、同時に使用することはできません。これらは、|config| ディレクトリへ配置す
 る必要があり一般的に Linux, BSD, macOS では `~/.config/nvim` で Windows では
 `~/AppData/Local/nvim/` です。Note `init.vim` 内で Lua を、`init.vim` 内でVim
@@ -177,7 +175,7 @@ Note 特殊な文字はバックシュラッシュでエスケープが必要で
 >lua
     vim.cmd("%s/\\Vfoo/bar/g")
 <
-別の方法として角カッコを使った文字列リテラル(|luaref-literal| を参照)があります。
+別の方法として角カッコを使った文字列リテラル(|lua-literal| を参照)があります。
 >lua
     vim.cmd([[%s/\Vfoo/bar/g]])
 <
@@ -189,10 +187,10 @@ Note 特殊な文字はバックシュラッシュでエスケープが必要で
       highlight link Warning Error
     ]])
 <
-これと逆の機能として |lua-heredoc| があり、 `init.vim` に Lua コードを含めること
-ができます。
+これと逆の機能として |lua-heredoc| があり、 `init.lua` にVim scriptのコードを含める
+ことができます。
 
-プログラム的に Vim コマンドを呼び出したい場合、次のような方法があります(上記の例
+プログラムから Vim コマンドを呼び出したい場合、次のような方法があります(上記の例
 と等価です):
 >lua
     vim.cmd.colorscheme("habamax")
@@ -208,7 +206,7 @@ Vim script 関数                                        *lua-guide-vim-function
     print(vim.fn.printf('Hello from %s', 'Lua'))
 
     local reversed_list = vim.fn.reverse({ 'a', 'b', 'c' })
-    print(vim.inspect(reversed_list)) -- { "c", "b", "a" }
+    vim.print(reversed_list) -- { "c", "b", "a" }
 
     local function print_stdout(chan_id, data, name)
       print(data[1])
@@ -253,7 +251,7 @@ Note ハッシュ(`#`)は Lua で有効な識別子ではないため、 |autolo
       key2 = 300
     }
 
-    print(vim.inspect(vim.g.some_global_variable))
+    vim.print(vim.g.some_global_variable)
     --> { key1 = "value", key2 = 300 }
 <
 バッファ(番号)やウィンドウ(|window_ID|)やタブページを指定したい場合、次のように
@@ -269,15 +267,15 @@ Note ハッシュ(`#`)は Lua で有効な識別子ではないため、 |autolo
 Note 配列のフィールドを直接変更することはできません。次の例は動作しません。:
 >lua
     vim.g.some_global_variable.key2 = 400
-    vim.pretty_print(vim.g.some_global_variable)
+    vim.print(vim.g.some_global_variable)
     --> { key1 = "value", key2 = 300 }
 <
 代わりに、Lua の中間テーブルを作成してから上書きします。:
 >lua
     local temp_table = vim.g.some_global_variable
-    temp_table = keys = 400
+    temp_table.key2 = 400
     vim.g.some_global_variable = temp_table
-    vim.pretty_print(vim.g.some_global_variable)
+    vim.print(vim.g.some_global_variable)
     --> { key1 = "value", key2 = 400 }
 <
 変数を削除するには、単に `nil` を代入します。:
@@ -339,7 +337,7 @@ list/map/set のようなオプションは
     --> {...} (big table)
     print(vim.opt.smarttab:get())
     --> false
-    vim.pretty_print(vim.opt.listchars:get())
+    vim.print(vim.opt.listchars:get())
     --> { space = '_', tab = '>~' }
 <
 ------------------------------------------------------------------------------
@@ -352,7 +350,7 @@ vim.o
 • |vim.o|:  |:set| のように動作します。
 • |vim.go|: |:setglobal| のように動作します。
 • |vim.bo|: バッファローカルなオプション
-• |vim.wo|: ウィンドウローカルなオプション
+• |vim.wo|: ウィンドウローカルなオプション(2重のインデックスアクセスが可能)
 
 例:
 >lua
@@ -374,6 +372,9 @@ vim.o
 >lua
     vim.bo[4].expandtab = true -- sets expandtab to true in buffer 4
     vim.wo.number = true       -- sets number to true in current window
+    vim.wo[0].number = true    -- same as above
+    vim.wo[0][0].number = true -- sets number to true in current buffer
+                               -- in current window only
     print(vim.wo[0].number)    --> true
 <
 ------------------------------------------------------------------------------
@@ -393,10 +394,10 @@ Vim コマンドや Lua 関数をキー入力にマッピングすることが�
 • {mode} はマッピングを適用するモードのプレフィックスの文字列または、テーブルで
    す。プレフィックスのリストは |:map-modes| にあります。"!"を指定すると |:map!| 
    となり、何も指定しない場合は |:map| です。
-• {lhs} はトリガーとなるキーの文字列です。空の文字列は |<Nop>| と解釈され、 キ
-   ーを無効にします。
+• {lhs} はトリガーとなるキーの文字列です。
 • {rhs} は Vim コマンドの文字列か、Lua の関数です。{lhs} を入力すると実行されま
-   す。
+   す。空の文字列は |<Nop>| と解釈され、キーを無効にします。
+
 
 例:
 >lua
@@ -419,7 +420,7 @@ Note この場合、マッピングが定義された時にプラグインが読
 >lua
     vim.keymap.set('n', '<Leader>pl2', function() require('plugin').action() end)
 <
-4つめの引数はオプションでテーブルを渡します。|:map-arguments| にあるマッピングの
+4つ目の引数はオプションでテーブルを渡します。 |:map-arguments| にあるマッピングの
 振舞いを指定します。下記のオプションはとても役に立ちます。:
 • `buffer`: バッファ番号を指定するとそのバッファだけにマッピングを適用できます。
    `0` か `true` を指定するとカレントバッファになります。 >lua
@@ -447,7 +448,7 @@ Note この場合、マッピングが定義された時にプラグインが読
 <
 • `remap`: デフォルトでは全てのマッピングは再帰的に実行されません(すなわち、
    |vim.keymap.set()|は |:noremap| と同じ動作です)。{rhs} 自体にマッピングを適用
-   したい場合、`remap = true` を指定します。: >lua
+   したい場合、 `remap = true` を指定します。: >lua
     vim.keymap.set('n', '<Leader>ex1', '<cmd>echo "Example 1"<cr>')
     -- add a shorter mapping
     vim.keymap.set('n', 'e', '<Leader>ex1', { remap = true })
@@ -474,7 +475,7 @@ Note この場合、マッピングが定義された時にプラグインが読
 
 |autocommand| は|events| をトリガーにして Vim コマンドや Lua 関数を自動的に実行
 します。例えば、ファイルを読み込んだり書き込んだ時、ウィンドウを作成した時などで
-す。これらは Neovim API を介して Lua から使用することができます。
+す。これらは Nvim API を介して Lua から使用することができます。
 
 ------------------------------------------------------------------------------
 自動コマンドを作成する                            *lua-guide-autocommand-create*
@@ -514,34 +515,36 @@ Note この場合、マッピングが定義された時にプラグインが読
     })
 <
 
-Neovim will always call a Lua function with a single table containing information
-about the triggered autocommand. The most useful keys are
-• `match`: a string that matched the `pattern` (see |<amatch>|)
-• `buf`:   the number of the buffer the event was triggered in (see |<abuf>|)
-• `file`:  the file name of the buffer the event was triggered in (see |<afile>|)
-• `data`:  a table with other relevant data that is passed for some events
+関数呼び出し時、自動コマンドが実行された時の情報を含んだテーブルが渡されます。
+特に便利なキーはこちら
+• `match`: `pattern`にマッチした文字列(|<amatch>|を参照)
+• `buf`:   イベントがトリガーされたバッファ番号(|<abuf>|を参照)
+• `file`:  イベントがトリガーされたファイル名(|<afile>|を参照)
+• `data`:  渡された関連情報のテーブル
 
-For example, this allows you to set buffer-local mappings for some filetypes:
+次の例では、いくつかのファイルタイプでバッファローカルなマッピングをすることがで
+きます。
 >lua
-    vim.api.nvim.create_autocmd("FileType", {
+    vim.api.nvim_create_autocmd("FileType", {
       pattern = "lua",
       callback = function(args)
         vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = args.buf })
       end
     })
 <
-This means that if your callback itself takes an (even optional) argument, you
-must wrap it in `function() end` to avoid an error:
+これは、たとえ受けとる引数がオプションだとしても、エラーを避けるために
+`function() end` でラップする必要があることを意味します。
 >lua
     vim.api.nvim_create_autocmd('TextYankPost', {
       callback = function() vim.highlight.on_yank() end
     })
 <
-(Since unused arguments can be omitted in Lua function definitions, this is
-equivalent to `function(args) ... end`.)
+(Luaの関数定義時、未使用の引数は省略できるため `function(args) ... end` と等価で
+す。)
 
-Instead of using a pattern, you can create a buffer-local autocommand (see
-|autocmd-buflocal|) with `buffer`; in this case, `pattern` cannot be used:
+パターンを指定する変わりに `buffer` を指定することでバッファローカルな自動コマンド
+(|aut-buflocal|を参照)を作成できます。
+この場合、 `pattern` は使用できません。:
 >lua
     -- set autocommand for current buffer
     vim.api.nvim_create_autocmd("CursorHold", {
@@ -555,32 +558,32 @@ Instead of using a pattern, you can create a buffer-local autocommand (see
       callback = function() print("hold") end,
     })
 <
-Similarly to mappings, you can (and should) add a description using `desc`:
+マッピングと同様に、 `desc` を指定して説明を書くことができます。(そして、するべき
+です。):
 >lua
     vim.api.nvim_create_autocmd('TextYankPost', {
       callback = function() vim.highlight.on_yank() end,
       desc = "Briefly highlight yanked text"
     })
 <
-Finally, you can group autocommands using the `group` key; this will be
-covered in detail in the next section.
+最後に、 `group` キーで自動コマンドをグループ化できます。詳細は次のセクションで説
+明します。
 
 ------------------------------------------------------------------------------
-Grouping autocommands                             *lua-guide-autocommands-group*
+自動コマンドのグループ化                          *lua-guide-autocommands-group*
 
-Autocommand groups can be used to group related autocommands together; see
-|autocmd-groups|. This is useful for organizing autocommands and especially
-for preventing autocommands to be set multiple times.
+自動コマンドのグループは関連した自動コマンドをまとめて扱うことができます。
+詳細は|autocmd-groups|を参照してください。これは自動コマンドを整理し、複数回設定
+されることを防ぐのに便利です。
 
-Groups can be created with `vim.api.`|nvim_create_augroup()|. This function
-takes two mandatory arguments: a string with the name of a group and a table
-determining whether the group should be cleared (i.e., all grouped
-autocommands removed) if it already exists. The function returns a number that
-is the internal identifier of the group. Groups can be specified either by
-this identifier or by the name (but only if the group has been created first).
+グループは `vim.api.`|nvim_create_augroup()| で作成できます。この関数は2つの必須な引
+数を取ります。:
+グループ名と、自動コマンドが既に存在するとき(グループの自動コマンドをすべて)削除
+するかを指定するテーブルです。 この関数は内部的なグループID(数値)を返します。
+グループはこのグループIDか(作成済みの)名前で指定することができます。
 
-For example, a common Vimscript pattern for autocommands defined in files that
-may be reloaded is
+これは、再読み込みされる可能性のあるファイルで自動コマンドを設定する一般的なVim
+scriptの例です。
 >vim
     augroup vimrc
       " Remove all vimrc autocommands
@@ -589,36 +592,34 @@ may be reloaded is
       au BufNewFile,BufRead *.html set expandtab
     augroup END
 <
-This is equivalent to the following Lua code:
+以下は等価なLuaコードです。:
 >lua
     local mygroup = vim.api.nvim_create_augroup('vimrc', { clear = true })
-    vim.api.nvim_create_autocmd( {'BufNewFile', 'BufRead' }, {
+    vim.api.nvim_create_autocmd({'BufNewFile', 'BufRead' }, {
       pattern = '*.html',
       group = mygroup,
-      cmd = 'set shiftwidth=4',
+      command = 'set shiftwidth=4',
     })
-    vim.api.nvim_create_autocmd( {'BufNewFile', 'BufRead' }, {
+    vim.api.nvim_create_autocmd({'BufNewFile', 'BufRead' }, {
       pattern = '*.html',
       group = 'vimrc',  -- equivalent to group=mygroup
-      cmd = 'set expandtab',
+      command = 'set expandtab',
     })
 <
-Autocommand groups are unique for a given name, so you can reuse them, e.g.,
-in a different file:
+グループは名前に対して一意です。そのため、別のファイルでも使用できます。:
 >lua
     local mygroup = vim.api.nvim_create_augroup('vimrc', { clear = false })
-    vim.api.nvim_create_autocmd( {'BufNewFile', 'BufRead' }, {
+    vim.api.nvim_create_autocmd({'BufNewFile', 'BufRead' }, {
       pattern = '*.html',
       group = mygroup,
-      cmd = 'set shiftwidth=4',
+      command = 'set shiftwidth=4',
     })
 <
 ------------------------------------------------------------------------------
-Deleting autocommands                            *lua-guide-autocommands-delete*
+自動コマンドの削除                               *lua-guide-autocommands-delete*
 
-You can use `vim.api.`|nvim_clear_autocmds()| to remove autocommands. This
-function takes a single mandatory argument that is a table of keys describing
-the autocommands that are to be removed:
+`vim.api.`|nvim_clear_autocmds()|を使用して自動コマンドを削除できます。
+この関数は、削除する自動コマンドを指定するテーブルを取ります。
 >lua
     -- Delete all BufEnter and InsertLeave autocommands
     vim.api.nvim_clear_autocmds({event = {"BufEnter", "InsertLeave"}})
@@ -632,57 +633,52 @@ the autocommands that are to be removed:
     -- Delete all ColorScheme autocommands in current buffer
     vim.api.nvim_clear_autocmds({event = "ColorScheme", buffer = 0 })
 <
-Note: Autocommands in groups will only be removed if the `group` key is
-specified, even if another option matches it.
+Note: `group` キーが指定された場合、他のオプションがマッチしても対象はそのグループ
+のみになります。
 
 ------------------------------------------------------------------------------
-See also
-• |nvim_get_autocmds()|:  return all matching autocommands
-• |nvim_exec_autocmds()|: execute all matching autocommands
+参照
+• |nvim_get_autocmds()|:  マッチした全ての自動コマンドを返す
+• |nvim_exec_autocmds()|: マッチした全ての自動コマンドを実行する
 
 ==============================================================================
-User commands                                           *lua-guide-usercommands*
+ユーザーコマンド                                            *lua-guide-commands*
 
-|user-commands| are custom Vim commands that call a Vimscript or Lua function.
-Just like built-in commands, they can have arguments, act on ranges, or have
-custom completion of arguments. As these are most useful for plugins, we will
-cover only the basics of this advanced topic.
+|user-commands|はVim scriptまたはLua関数を呼び出すカスタムVimコマンドです。
+組み込みコマンドの様に引数を取ったり、範囲を指定したり、引数の補完をできたりしま
+す。これらはプラグインで重要なので、ここでは基本的なことを説明します。
 
 ------------------------------------------------------------------------------
-Creating user commands                           *lua-guide-usercommands-create*
+ユーザーコマンドを作成する                           *lua-guide-commands-create*
 
-User commands can be created through the Neovim API with
-`vim.api.`|nvim_create_user_command()|. This function takes three mandatory
-arguments:
-• a string that is the name of the command (which must start with an uppercase
-  letter to distinguish it from builtin commands);
-• a string containing Vim commands or a Lua function that is executed when the
-  command is invoked;
-• a table with |command-attributes|; in addition, it can contain the keys
-  `desc` (a string describing the command); `force` (set to `false` to avoid
-  replacing an already existing command with the same name), and `preview` (a
-  Lua function that is used for |:command-preview|).
+ユーザーコマンドは`vim.api.`|nvim_create_user_command()|で作成します。
+この関数は3つの引数を取ります。:
+• コマンド名(組み込みコマンドと区別するため大文字で始める必要があります。)
+• Vimコマンドの文字列または、Lua関数(コマンド実行時に呼び出されます)
+• |command-attributes|のテーブル、`desc`(コマンドの説明)、`force`(同じ名前のコマ
+   ンドを上書きしないようにするには`false`を指定します)、`preview`(|command-preview|
+   に使用するLua関数)。
 
-Example:
+例:
 >lua
     vim.api.nvim_create_user_command('Test', 'echo "It works!"', {})
     vim.cmd.Test()
     --> It works!
 <
-(Note that the third argument is mandatory even if no attributes are given.)
+(Note: 3つ目の引数は何も指定しない場合でも必須です。)
 
-Lua functions are called with a single table argument containing arguments and
-modifiers. The most important are:
-• `name`: a string with the command name
-• `fargs`: a table containing the command arguments split by whitespace (see |<f-args>|)
-• `bang`: `true` if the command was executed with a `!` modifier (see |<bang>|)
-• `line1`: the starting line number of the command range (see |<line1>|)
-• `line2`: the final line number of the command range (see |<line2>|)
-• `range`: the number of items in the command range: 0, 1, or 2 (see |<range>|)
-• `count`: any count supplied (see |<count>|)
-• `smods`: a table containing the command modifiers (see |<mods>|)
+Lua関数は、修飾子を含んだテーブルを引数に渡されて呼び出されます。
+重要なものはこちらです。:
+• `name`: コマンド名の文字列。
+• `fargs`: 空白で分割されたコマンドの引数が含まれたテーブル。(|<f-args>|を参照)
+• `bang`: コマンドが`!`付きで実行されたなら`true`。(|<bang>|を参照)
+• `line1`: コマンド範囲の最初の行番号。(|<line1>|を参照)
+• `line2`: コマンド範囲の最後の行番号。(|<line2>|を参照)
+• `range`: コマンド範囲の要素の数:0,1 または 2。(|<range>|を参照)
+• `count`: 与えられたカウント。(|<count>|を参照)
+• `smods`: コマンド修飾子のテーブル。(|<mods>|を参照)
 
-For example:
+例:
 >lua
     vim.api.nvim_create_user_command('Upper',
       function(opts)
@@ -693,8 +689,9 @@ For example:
     vim.cmd.Upper('foo')
     --> FOO
 <
-The `complete` attribute can take a Lua function in addition to the
-attributes listed in |:command-complete|. >lua
+`complete`は |command-complete| の属性やLua関数を取ります。
+
+>lua
 
     vim.api.nvim_create_user_command('Upper',
       function(opts)
@@ -707,9 +704,9 @@ attributes listed in |:command-complete|. >lua
         end,
     })
 <
-Buffer-local user commands are created with `vim.api.`|nvim_buf_create_user_command()|.
-Here the first argument is the buffer number (`0` being the current buffer);
-the remaining arguments are the same as for |nvim_create_user_command()|:
+バッファローカルなユーザーコマンドを作成するには、 `vim.api.`|nvim_buf_create_user_command()|
+を使用します。 最初の引数はバッファ番号です。(`0`はカレントバッファです。)
+残りの引数は |nvim_create_user_command()|と同様です。:
 >lua
     vim.api.nvim_buf_create_user_command(0, 'Upper',
       function(opts)
@@ -718,21 +715,21 @@ the remaining arguments are the same as for |nvim_create_user_command()|:
       { nargs = 1 })
 <
 ------------------------------------------------------------------------------
-Deleting user commands                           *lua-guide-usercommands-delete*
+ユーザーコマンドを削除する                           *lua-guide-commands-delete*
 
-User commands can be deleted with `vim.api.`|nvim_del_user_command()|. The only
-argument is the name of the command:
+ユーザーコマンドを削除するには `vim.api.`|nvim_del_user_command()| を使用します。
+引数はコマンド名1つだけです。:
 >lua
     vim.api.nvim_del_user_command('Upper')
 <
-To delete buffer-local user commands use `vim.api.`|nvim_buf_del_user_command()|.
-Here the first argument is the buffer number (`0` being the current buffer),
-and second is command name:
+バッファローカルなユーザーコマンドを削除するには `vim.api.`|nvim_buf_del_user_command()|
+を使用します。最初の引数はバッファ番号です。(`0`はカレントバッファです。)
+2つ目の引数はコマンド名です。:
 >lua
     vim.api.nvim_buf_del_user_command(4, 'Upper')
 <
 ==============================================================================
-Credits                                                      *lua-guide-credits*
+クレジット                                                   *lua-guide-credits*
 This guide is in large part taken from nanotee's Lua guide:
 https://github.com/nanotee/nvim-lua-guide
 
