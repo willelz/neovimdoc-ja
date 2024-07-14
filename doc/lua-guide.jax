@@ -213,7 +213,6 @@ Vim script 関数                                        *lua-guide-vim-function
     end
 
     vim.fn.jobstart('ls', { on_stdout = print_stdout })
-    print(vim.fn.printf('Hello from %s', 'Lua'))
 <
 これは |builtin-function| と |user-function| の両方で動作します。
 
