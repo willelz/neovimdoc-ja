@@ -534,7 +534,7 @@ Note この場合、マッピングが定義された時にプラグインが読
 ラップする必要があります。
 >lua
     vim.api.nvim_create_autocmd('TextYankPost', {
-      callback = function() vim.highlight.on_yank() end
+      callback = function() vim.hi.on_yank() end
     })
 <
 (Luaの関数定義時、未使用の引数は省略できるため `function(args) ... end` と等価で
@@ -559,7 +559,7 @@ Note この場合、マッピングが定義された時にプラグインが読
 マッピングと同様に、 `desc` に説明を書くことができます。(そして、するべきです。):
 >lua
     vim.api.nvim_create_autocmd('TextYankPost', {
-      callback = function() vim.highlight.on_yank() end,
+      callback = function() vim.hi.on_yank() end,
       desc = "Briefly highlight yanked text"
     })
 <
