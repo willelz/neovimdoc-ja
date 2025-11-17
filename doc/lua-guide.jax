@@ -10,15 +10,15 @@
 ==============================================================================
 イントロダクション                                                   *lua-guide*
 
-このガイドは Nvim でLua を使用するための基本を説明します。辞書のように全ての
-機能を細かく載せるものではありません。NvimでLua を快適に使い始めるための最低限
-の知識、サバイバルキットのような物だと思ってください。
+このガイドは、Nvimの設定と制御のための日常的なLuaの使用方法の基本を説明します。
+|user-manual| に載っている Nvim の(非 Lua)基本的な機能(コマンド、オプション、
+マッピング、自動コマンド)にある程度慣れていることを前提としています。
 
-このガイドは Lua 言語自体のガイドではないことに注意してください。 Nvim で使いや
-すいように提供されている機能についてのガイドです。Lua について更に学びたい場合
-は、 |luaref| や、 |lua-concepts| をご覧ください。同様に、 |user-manual| に載っている
-Nvim の基本的な機能(コマンド、オプション、マッピング、自動コマンド)にある程度慣
-れていることを前提としています。
+辞書のように全ての機能を細かく載せるものではありません。NvimでLua を快適に
+使い始めるための最低限の知識、サバイバルキットのような物だと思ってください。
+
+Lua プラグインの開発に関するガイダンスは |lua-plugin| を参照してください。
+プログラミング言語の Lua の詳細は |luaref| と |lua-concepts| を参照してください。
 
 ------------------------------------------------------------------------------
 APIについて                                                      *lua-guide-api*
@@ -27,14 +27,14 @@ APIについて                                                      *lua-guide-
 です。この API は3つの異るレイヤーから成っています:
 
 1. Vim から継承された "Vim API": Vim script の |ex-commands| 、
-|builtin-functions|、 |uset-function|。これらの3つはそれぞれ、 |vim.cmd()|、
-|vim.fn| でアクセスできます。下記の |lua-guide-vimscript| で紹介します。
+   |vimscript-functions|、 |uset-function|。これらの3つはそれぞれ、 |vim.cmd()|、
+   |vim.fn| でアクセスできます。下記の |lua-guide-vimscript| で紹介します。
 
-2. リモートプラグインと GUI で使われる C で書かれた "Nvim API"。 |api| を参照し
-てください。これらの関数は |vim.api| でアクセスできます。
+2. リモートプラグインと GUI で使われる C で書かれた "Nvim API"。
+   |api| を参照してください。これらの関数は |vim.api| でアクセスできます。
 
 3. Lua 専用に書かれた "Lua API"。これらは `vim.*` でアクセスできます。
-|lua-stdlib| を参照してください。
+   |lua-stdlib| を参照してください。
 
 ここで重要な違いは、API 関数は元のレイヤーから動作を継承することです。例えば、
 Nvim API 関数は Lua で引数を省略(`nil` として渡される)できたとしても全てを指定
@@ -85,9 +85,9 @@ Lua コードを含めることができます。:
 
 Nvim は、`init.vim` か `init.lua` を設定ファイルとして使用することができます。
 ただし、同時に使用することはできません。これらは、|config| ディレクトリへ配置す
-る必要があり一般的に Linux, BSD, macOS では `~/.config/nvim` で Windows では
-`~/AppData/Local/nvim/` です。Note `init.vim` 内で Lua を、`init.vim` 内でVim
-sript を使うこともできます。後ほど説明します。
+る必要があります。(`:echo stdpath('config')` を実行するとそれの場所を見れます)
+Note `init.vim` 内で Lua を、`init.vim` 内でVim sript を使うこともできます。
+後ほど説明します。
 
 その他の Lua スクリプトを |startup| 時に自動で実行させたい場合、`runtimepath` 内
 にある `plugin/` ディレクトリに配置してください。
@@ -95,7 +95,7 @@ sript を使うこともできます。後ほど説明します。
 ------------------------------------------------------------------------------
 Luaモジュール                                                *lua-guide-modules*
 
-任意のタイミングで Lua ファイルを読み込みたい場合、 |'runtimepath'| 内にある
+任意のタイミングで Lua ファイルを読み込みたい場合、 'runtimepath' 内にある
 `lua` ディレクトリに配置して `require` でロードします。(これは、Vim script にお
 ける |autoload| と同じ役割です。)
 
@@ -113,7 +113,6 @@ Luaモジュール                                                *lua-guide-mod
     |-- syntax/
     |-- init.vim
 <
-
 次の Lua コードで `myluamodule.lua` をロードします。:
 >lua
     require("myluamodule")
@@ -126,7 +125,6 @@ Note: `.lua` 拡張子がつかないことに注意してください。
     -- or
     require('other_modules.anothermodule')
 <
-
 Note: サブモジュールは単なるサブディレクトリであることに注意してください。`.` は
 パスの区切り文字 `/` と同じです。(Windows でも同様)
 
@@ -146,7 +144,7 @@ Note: サブモジュールは単なるサブディレクトリであること�
       mymod.func()
     end
 <
-|:source| とは対照的に、|require()| は |runtimepath| 内の `lua/` ディレクトリを
+|:source| とは対照的に、|require()| は 'runtimepath' 内の `lua/` ディレクトリを
 検索するだけでなく、初回使用時にモジュールをキャッシュします。再度 `require()`
 を呼び出す場合、スクリプトは評価されずキャッシュされたファイルを返します。もう一
 度実行したい場合、手動でキャッシュを削除します。:
@@ -156,8 +154,8 @@ Note: サブモジュールは単なるサブディレクトリであること�
 <
 ------------------------------------------------------------------------------
 参照:
-• |lua-require|
-• |luaref-pcall()|
+• |lua-module-load|: `require()` がモジュールを見つける方法
+• |pcall()|
 
 ==============================================================================
 Vim のコマンドと関数を Lua から使う                        *lua-guide-vimscript*
@@ -214,7 +212,7 @@ Vim script 関数                                        *lua-guide-vim-function
 
     vim.fn.jobstart('ls', { on_stdout = print_stdout })
 <
-これは |builtin-function| と |user-function| の両方で動作します。
+これは |vimscript-functions| と |user-function| の両方で動作します。
 
 Note ハッシュ(`#`)は Lua で有効な識別子ではないため、 |autoload| 関数などを呼び
 出すには次の構文を使用します。:
@@ -223,11 +221,10 @@ Note ハッシュ(`#`)は Lua で有効な識別子ではないため、 |autolo
 <
 ------------------------------------------------------------------------------
 参照:
-• |builtin-functions|: Vim script 関数のアルファベット順のリスト
-• |function-list|:     トピックごとにグループ化された Vim script 関数のリスト
-• |:runtime|:          |'runtimepath'| のパターンに一致する全ての Lua スクリプトが
+• |vimscript-functions|: 全てのVim script 関数の説明
+• |function-list|:     トピックごとにグループ化された Vim script 関数
+• |:runtime|:          'runtimepath' のパターンに一致する全ての Lua スクリプトが
                       実行されます
-• |package.path|:      `require()` で検索される全てのパスのリスト
 
 ==============================================================================
 変数                                                       *lua-guide-variables*
@@ -512,7 +509,6 @@ Note この場合、マッピングが定義された時にプラグインが読
       callback = function() print("My Plugin Works!") end,
     })
 <
-
 自動コマンド実行時、Lua関数にはその時の情報が入ったテーブルが渡されます。
 特に便利なキーはこちら
 • `match`: `pattern`にマッチした文字列(|<amatch>|を参照)
